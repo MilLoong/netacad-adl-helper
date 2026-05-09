@@ -101,9 +101,15 @@
 
 #netacad-adl-helper-panel.netacad-adl-expanded .netacad-adl-card {
   display: flex;
-  max-height: min(72vh, 520px);
+  max-height: min(420px, 52vh, calc(100vh - 96px));
   flex: 1 1 auto;
   animation: netacad-adl-card-enter 0.52s cubic-bezier(0.34, 1.35, 0.52, 1) both;
+}
+
+@supports (height: 100dvh) {
+  #netacad-adl-helper-panel.netacad-adl-expanded .netacad-adl-card {
+    max-height: min(420px, 52dvh, calc(100dvh - 96px));
+  }
 }
 
 #netacad-adl-helper-panel.netacad-adl-fab-defer:not(.netacad-adl-expanded) .netacad-adl-fab {
