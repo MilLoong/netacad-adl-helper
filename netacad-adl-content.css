@@ -1,0 +1,392 @@
+/* 课程页面板 */
+
+#netacad-adl-helper-panel {
+  --sfa-fab-right: 25px;
+  --webex-fab-bottom: 30px;
+  --assignment-fab-bottom: 90px;
+  --fab-vertical-step: calc(var(--assignment-fab-bottom) - var(--webex-fab-bottom));
+  --answer-fab-bottom: calc(var(--assignment-fab-bottom) + var(--fab-vertical-step));
+  --netacad-adl-fab-bottom: calc(var(--answer-fab-bottom) + var(--fab-vertical-step));
+  --netacad-adl-fab-size: 48px;
+
+  position: fixed;
+  z-index: 2147483646;
+  right: calc(var(--sfa-fab-right) + env(safe-area-inset-right, 0px));
+  bottom: calc(var(--netacad-adl-fab-bottom) + env(safe-area-inset-bottom, 0px));
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  width: max-content;
+  max-width: min(380px, calc(100vw - 24px));
+
+  display: flex;
+  flex-direction: column-reverse;
+  align-items: flex-end;
+  gap: 8px;
+
+  pointer-events: none;
+  font-family: system-ui, "Segoe UI", "Microsoft YaHei", sans-serif;
+  font-size: 13px;
+  line-height: 1.45;
+}
+
+#netacad-adl-helper-panel,
+#netacad-adl-helper-panel * {
+  box-sizing: border-box;
+}
+
+#netacad-adl-helper-panel .netacad-adl-fab,
+#netacad-adl-helper-panel .netacad-adl-card {
+  pointer-events: auto;
+}
+
+#netacad-adl-helper-panel:not(.netacad-adl-expanded) {
+  width: var(--netacad-adl-fab-size);
+  max-width: var(--netacad-adl-fab-size);
+  gap: 0;
+}
+
+/* FAB */
+#netacad-adl-helper-panel .netacad-adl-fab {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  width: var(--netacad-adl-fab-size);
+  height: var(--netacad-adl-fab-size);
+  padding: 0;
+  margin: 0;
+  border: none;
+  border-radius: 50%;
+  cursor: pointer;
+  color: #fff;
+
+  background: linear-gradient(145deg, #22d3ee, #0e7490);
+  box-shadow: 0 1px 6px rgba(0, 0, 0, 0.28);
+  font-size: 16px;
+  font-weight: 700;
+  line-height: 1;
+  letter-spacing: 0;
+  font-family: system-ui, "Segoe UI", "Microsoft YaHei", sans-serif;
+  touch-action: manipulation;
+}
+
+#netacad-adl-helper-panel .netacad-adl-fab:hover {
+  filter: brightness(1.08);
+}
+
+#netacad-adl-helper-panel.netacad-adl-expanded .netacad-adl-fab {
+  display: none;
+}
+
+/* 卡片 */
+
+#netacad-adl-helper-panel .netacad-adl-card {
+  width: min(380px, calc(100vw - 24px));
+  max-width: 100%;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  border-radius: 10px;
+  border: 1px solid #3c4043;
+  background: #1e1f24;
+  color: #e8eaed;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.45);
+  transform-origin: bottom right;
+}
+
+#netacad-adl-helper-panel:not(.netacad-adl-expanded) .netacad-adl-card {
+  display: none;
+}
+
+#netacad-adl-helper-panel.netacad-adl-expanded .netacad-adl-card {
+  display: flex;
+  max-height: min(72vh, 520px);
+  flex: 1 1 auto;
+  animation: netacad-adl-card-enter 0.52s cubic-bezier(0.34, 1.35, 0.52, 1) both;
+}
+
+#netacad-adl-helper-panel.netacad-adl-fab-defer:not(.netacad-adl-expanded) .netacad-adl-fab {
+  opacity: 0;
+  animation: netacad-adl-fab-enter 0.42s cubic-bezier(0.34, 1.22, 0.54, 1) 0.32s forwards;
+}
+
+#netacad-adl-helper-panel .netacad-adl-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  flex-shrink: 0;
+  padding: 10px 12px;
+  border-bottom: 1px solid #3c4043;
+  font-weight: 600;
+  font-size: 13px;
+  background: #1e1f24;
+}
+
+#netacad-adl-helper-panel .netacad-adl-close {
+  width: 30px;
+  height: 30px;
+  padding: 0;
+  margin: 0;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 22px;
+  line-height: 1;
+  color: #e8eaed;
+  background: transparent;
+}
+
+#netacad-adl-helper-panel .netacad-adl-close:hover {
+  background: #3c4043;
+}
+
+#netacad-adl-helper-panel .netacad-adl-body {
+  flex: 1;
+  overflow-x: hidden;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  padding: 10px 12px;
+  min-height: 0;
+}
+
+#netacad-adl-helper-panel .netacad-adl-section {
+  margin-bottom: 12px;
+}
+
+#netacad-adl-helper-panel .netacad-adl-section:last-of-type {
+  margin-bottom: 0;
+}
+
+#netacad-adl-helper-panel .netacad-adl-section-title {
+  margin: 0 0 8px;
+  font-weight: 600;
+  font-size: 13px;
+  color: #fff;
+}
+
+#netacad-adl-helper-panel .netacad-adl-field {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin-bottom: 8px;
+}
+
+#netacad-adl-helper-panel .netacad-adl-field > span {
+  font-size: 12px;
+  color: #9aa0a6;
+}
+
+#netacad-adl-helper-panel .netacad-adl-field input {
+  padding: 6px 8px;
+  border: 1px solid #444;
+  border-radius: 6px;
+  font-size: 13px;
+  background: #2d3033;
+  color: #e8eaed;
+  cursor: default;
+}
+
+#netacad-adl-helper-panel .netacad-adl-tip-list {
+  margin: 0 0 10px;
+  padding-left: 1.35em;
+  list-style-type: disc;
+  list-style-position: outside;
+}
+
+#netacad-adl-helper-panel .netacad-adl-tip-list li {
+  margin-bottom: 0.4em;
+  padding-left: 0.15em;
+}
+
+#netacad-adl-helper-panel .netacad-adl-tip-list li:last-child {
+  margin-bottom: 0;
+}
+
+#netacad-adl-helper-panel .netacad-adl-tip-list li::marker {
+  color: #9aa0a6;
+}
+
+#netacad-adl-helper-panel .netacad-adl-tip {
+  margin: 0;
+  font-size: 11px;
+  color: #9aa0a6;
+  line-height: 1.45;
+}
+
+#netacad-adl-helper-panel .netacad-adl-tip strong {
+  font-weight: 600;
+  color: #e8eaed;
+}
+
+/* 监听参数展开区：分段 + 醒目标题（避免页面全局把 strong 变细） */
+#netacad-adl-helper-panel .netacad-adl-json-stack {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin: 0;
+  padding: 8px;
+  max-height: 180px;
+  overflow-y: auto;
+  background: #0d1117;
+}
+
+#netacad-adl-helper-panel .netacad-adl-json-stack .netacad-adl-json {
+  margin: 0;
+  padding: 0;
+  max-height: none;
+  background: transparent;
+}
+
+#netacad-adl-helper-panel .netacad-adl-json-stack .capture-detail-heading {
+  margin: 0;
+  font-size: 11px;
+  color: #9aa0a6;
+  line-height: 1.35;
+}
+
+#netacad-adl-helper-panel .netacad-adl-json-stack .capture-detail-heading strong {
+  font-weight: 600;
+  color: #e8eaed;
+}
+
+#netacad-adl-helper-panel .netacad-adl-btn-row {
+  display: flex;
+  gap: 8px;
+  width: 100%;
+}
+
+#netacad-adl-helper-panel .netacad-adl-btn-row > .netacad-adl-btn {
+  flex: 1;
+  width: auto;
+}
+
+#netacad-adl-helper-panel .netacad-adl-btn {
+  padding: 8px 10px;
+  border-radius: 6px;
+  border: 1px solid #5f6368;
+  font-size: 13px;
+  cursor: pointer;
+  width: 100%;
+}
+
+#netacad-adl-helper-panel .netacad-adl-btn--secondary {
+  background: #3c4043;
+  border-color: #5f6368;
+  color: #e8eaed;
+}
+
+#netacad-adl-helper-panel .netacad-adl-btn--secondary:hover {
+  filter: brightness(1.08);
+}
+
+#netacad-adl-helper-panel .netacad-adl-btn--primary {
+  background: #1a73e8;
+  border-color: #1a73e8;
+  color: #fff;
+  font-weight: 600;
+}
+
+#netacad-adl-helper-panel .netacad-adl-btn--primary:hover {
+  filter: brightness(1.06);
+}
+
+#netacad-adl-helper-panel .netacad-adl-status {
+  margin: 0 0 6px;
+  font-weight: 600;
+  min-height: 1.35em;
+  font-size: 13px;
+  color: #e8eaed;
+}
+
+#netacad-adl-helper-panel #netacad-adl-lessonLine:empty {
+  display: none;
+  margin: 0;
+  min-height: 0;
+}
+
+#netacad-adl-helper-panel .netacad-adl-details {
+  margin-top: 4px;
+  border-radius: 6px;
+  border: 1px solid #3c4043;
+  overflow: hidden;
+}
+
+#netacad-adl-helper-panel .netacad-adl-details > summary {
+  padding: 8px 10px;
+  font-size: 12px;
+  color: #e8eaed;
+  cursor: pointer;
+  user-select: none;
+  background: #2d3033;
+  list-style-position: outside;
+}
+
+#netacad-adl-helper-panel .netacad-adl-details[open] > summary {
+  border-bottom: 1px solid #3c4043;
+}
+
+#netacad-adl-helper-panel .netacad-adl-details > summary:hover {
+  background: #393c41;
+}
+
+#netacad-adl-helper-panel .netacad-adl-json {
+  margin: 0;
+  padding: 8px;
+  max-height: 180px;
+  overflow: auto;
+  background: #0d1117;
+  color: #d1d9e7;
+  font-size: 11px;
+  line-height: 1.4;
+  white-space: pre-wrap;
+  word-break: break-all;
+}
+
+#netacad-adl-helper-panel .netacad-adl-toast {
+  margin: 8px 0 0;
+  min-height: 0;
+  font-size: 12px;
+  color: #9aa0a6;
+}
+
+#netacad-adl-helper-panel .netacad-adl-toast:empty {
+  display: none;
+}
+
+@keyframes netacad-adl-fab-enter {
+  from {
+    opacity: 0;
+    transform: translateY(14px) scale(0.82);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes netacad-adl-card-enter {
+  from {
+    opacity: 0;
+    transform: translateY(36px) scale(0.88);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  #netacad-adl-helper-panel.netacad-adl-expanded .netacad-adl-card {
+    animation: none;
+  }
+
+  #netacad-adl-helper-panel.netacad-adl-fab-defer:not(.netacad-adl-expanded) .netacad-adl-fab {
+    animation: none;
+    opacity: 1;
+    transform: none;
+  }
+}
