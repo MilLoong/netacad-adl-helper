@@ -5,8 +5,6 @@
 (function injectAdlProgressPanelHost() {
   if (!chrome?.runtime?.id) return;
 
-  if (window !== window.top) return;
-
   const PANEL_ID = "netacad-adl-helper-panel";
 
   /** FAB 路由匹配 */
@@ -14,8 +12,8 @@
     try {
       const u = new URL(href);
       const host = u.hostname.toLowerCase();
-      if (!host.endsWith("netacad.com")) return false;
-      if (host === "content.netacad.com") return false;
+      const onCisco = host === "cisco.com" || host.endsWith(".cisco.com");
+      if (!(host === "netacad.com" || host.endsWith(".netacad.com") || onCisco)) return false;
 
       const pl = (u.pathname || "").toLowerCase();
       if (
@@ -32,11 +30,26 @@
       }
       const blob = `${u.pathname}/${h}`.replace(/\/+/g, "/").toLowerCase();
 
+      const pathSegs = pl.split("/").filter((s) => s.length > 0);
+      const launchPathSeg = pathSegs.includes("launch");
+
+      if (host === "content.netacad.com") {
+        const contentPathOk =
+          pl.includes("/courses/content/") || blob.includes("courses/content");
+        if (!contentPathOk) return false;
+      } else if (onCisco) {
+        const ciscoOk =
+          /\bnetacad\b/i.test(blob) ||
+          /networking[\s_-]*academy/i.test(blob) ||
+          /\/learn\//i.test(pl) ||
+          /\/training\//i.test(pl);
+        if (!ciscoOk) return false;
+      }
+
       const strongCourse =
         pl.includes("/courses/") ||
         pl.includes("/learn/") ||
-        pl === "/launch" ||
-        pl.startsWith("/launch/") ||
+        launchPathSeg ||
         blob.includes("/courses/content/") ||
         blob.includes("courses/content");
 
@@ -70,8 +83,125 @@
     }
   }
 
+  /** 父页已挂载时同源子 frame 勿再插一套，避免出现两个「发」叠影 */
+  function attachAdlFabInThisFrame() {
+    try {
+      if (window.self === window.top) return true;
+      const th = typeof window.top?.location?.href === "string" ? window.top.location.href : "";
+      if (th && netacadLessonFabUrlMatch(th)) return false;
+    } catch (_) {
+      /* 跨域父文档不可读：仅在本 frame 判断是否显示 */
+    }
+    return true;
+  }
+
+  let adlFabLayoutSyncedOnce = false;
+
   function destroyPanel() {
+    adlFabLayoutSyncedOnce = false;
     document.getElementById(PANEL_ID)?.remove();
+  }
+
+  const FAB_SIZE_PX = 48;
+  const STACK_GAP_PX = 8;
+  const FAB_GAP_ABOVE_SITE_PX = 12;
+  const FAB_VERTICAL_STEP_FALLBACK = 60;
+  const FAB_IFRAME_RIGHT_NUDGE_PX = 9;
+
+  function applyAdlInset(panel, rightPx, bottomPx) {
+    panel.style.right = `${Math.max(0, Math.round(rightPx))}px`;
+    panel.style.bottom = `${Math.max(0, Math.round(bottomPx))}px`;
+  }
+
+  function resolveSiteFabAnchor() {
+    const pick = (doc) => {
+      if (!doc) return null;
+      const green = doc.getElementById("fabActionBtn");
+      if (green && green.isConnected) return { el: green, extraBottom: 0 };
+      const webex = doc.getElementById("webexFabActionBtn");
+      if (webex && webex.isConnected)
+        return { el: webex, extraBottom: FAB_VERTICAL_STEP_FALLBACK };
+      return null;
+    };
+    let w = window;
+    for (let depth = 0; depth < 8 && w; depth++) {
+      const hit = pick(w.document);
+      if (hit) return { ...hit, fabWin: w };
+      if (w === w.top) break;
+      try {
+        w = w.parent;
+      } catch (_e) {
+        break;
+      }
+    }
+    return null;
+  }
+
+  function computeAnswerEquivalentInsets() {
+    const anchor = resolveSiteFabAnchor();
+    if (!anchor) return null;
+    const { el, extraBottom, fabWin } = anchor;
+    const r = el.getBoundingClientRect();
+    const pw = window;
+    if (fabWin === pw) {
+      return {
+        rightPx: pw.innerWidth - r.right,
+        bottomPx: pw.innerHeight - r.top + extraBottom + FAB_GAP_ABOVE_SITE_PX,
+      };
+    }
+    const fr = pw.frameElement;
+    if (!fr || !fr.isConnected) return null;
+    const box = fr.getBoundingClientRect();
+    const cl = fr.clientLeft;
+    const ct = fr.clientTop;
+    return {
+      rightPx:
+        pw.innerWidth - (r.right - box.left - cl) - FAB_IFRAME_RIGHT_NUDGE_PX,
+      bottomPx:
+        pw.innerHeight -
+        r.top +
+        box.top +
+        ct +
+        extraBottom +
+        FAB_GAP_ABOVE_SITE_PX,
+    };
+  }
+
+  function syncAdlFabLayout(panel) {
+    if (!panel || !panel.isConnected) return;
+    const pw = window;
+    try {
+      const ah = document.getElementById("netacad-answer-helper-panel");
+      if (ah && ah.isConnected && pw.document.contains(ah)) {
+        const rAh = ah.getBoundingClientRect();
+        const rrEff = pw.innerWidth - rAh.right;
+        const bbEff = pw.innerHeight - rAh.bottom;
+        if (Number.isFinite(rrEff) && Number.isFinite(bbEff)) {
+          applyAdlInset(panel, rrEff, bbEff + FAB_SIZE_PX + STACK_GAP_PX);
+          adlFabLayoutSyncedOnce = true;
+          return;
+        }
+      }
+
+      const fromSite = computeAnswerEquivalentInsets();
+      if (fromSite) {
+        applyAdlInset(panel, fromSite.rightPx, fromSite.bottomPx + FAB_SIZE_PX + STACK_GAP_PX);
+        adlFabLayoutSyncedOnce = true;
+        return;
+      }
+
+      if (!adlFabLayoutSyncedOnce) {
+        panel.style.removeProperty("right");
+        panel.style.removeProperty("bottom");
+      }
+    } catch (_) {}
+  }
+
+  function scheduleAdlFabSync(forPanel) {
+    const p = forPanel && forPanel.id === PANEL_ID ? forPanel : document.getElementById(PANEL_ID);
+    if (!p) return;
+    syncAdlFabLayout(p);
+    requestAnimationFrame(() => syncAdlFabLayout(p));
   }
 
   function mountPanel() {
@@ -260,6 +390,7 @@
       panel.classList.add("netacad-adl-expanded");
       fab.setAttribute("aria-expanded", "true");
       void refreshProgressInto(els, { coursePageStrict: true });
+      scheduleAdlFabSync(panel);
     }
 
     function collapse(ev) {
@@ -269,6 +400,7 @@
       }
       panel.classList.remove("netacad-adl-expanded");
       fab.setAttribute("aria-expanded", "false");
+      scheduleAdlFabSync(panel);
     }
 
     fab.addEventListener("pointerdown", stopBubble, true);
@@ -286,6 +418,7 @@
         await flushAdlFromPerformanceIfLessonPage();
         await refreshProgressInto(els, { coursePageStrict: true });
         toastEl.textContent = "";
+        scheduleAdlFabSync(panel);
       },
       true
     );
@@ -303,16 +436,19 @@
         }
         toastEl.textContent = "完成";
         await refreshProgressInto(els, { coursePageStrict: true });
+        scheduleAdlFabSync(panel);
       },
       true
     );
+
+    scheduleAdlFabSync(panel);
   }
 
   let pollHref = "";
 
   function syncPanelToLessonUrl() {
     const href = location.href;
-    if (!netacadLessonFabUrlMatch(href)) {
+    if (!netacadLessonFabUrlMatch(href) || !attachAdlFabInThisFrame()) {
       pollHref = href;
       destroyPanel();
       return;
@@ -324,8 +460,11 @@
   syncPanelToLessonUrl();
   window.addEventListener("popstate", syncPanelToLessonUrl, true);
   window.addEventListener("hashchange", syncPanelToLessonUrl, true);
+  window.addEventListener("resize", () => scheduleAdlFabSync(), { passive: true });
+
   globalThis.setInterval(() => {
     const h = location.href;
     if (h !== pollHref) syncPanelToLessonUrl();
+    scheduleAdlFabSync();
   }, 450);
 })();

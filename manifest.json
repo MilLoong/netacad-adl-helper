@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
   "name": "NetAcad 学习进度助手",
-  "version": "1.2.23",
+  "version": "1.2.27",
   "description": "在 NetAcad 捕获学习会话与课件参数，按需提交 ADL 进度。",
   "permissions": ["webRequest", "storage", "cookies", "activeTab", "scripting"],
   "host_permissions": [
@@ -20,10 +20,17 @@
   },
   "content_scripts": [
     {
-      "matches": ["https://www.netacad.com/*", "https://netacad.com/*", "https://*.netacad.com/*"],
+      "matches": [
+        "https://www.netacad.com/*",
+        "https://netacad.com/*",
+        "https://*.netacad.com/*",
+        "https://*.cisco.com/*",
+        "https://cisco.com/*"
+      ],
       "js": ["netacad-activity-parse.js", "progress-common.js", "content.js"],
       "css": ["netacad-adl-content.css"],
-      "run_at": "document_idle"
+      "run_at": "document_idle",
+      "all_frames": true
     },
     {
       "matches": [
