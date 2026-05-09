@@ -715,7 +715,7 @@ function heardSessionSummary(capture) {
     const m = nonEmptyModuleId(hints.moduleId);
     const tail = tailM[1];
     return {
-      line: m ? m : `后缀 ${tail}，请打开一节正课以确认`,
+      line: m ? m : tail,
       numericHint: m || "",
     };
   }

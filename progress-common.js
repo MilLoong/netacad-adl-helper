@@ -228,7 +228,7 @@ function clearCaptureDetail(el) {
   el.replaceChildren();
 }
 
-function renderCaptureDetail(el, coreObj, urls, counts) {
+function renderCaptureDetail(el, coreObj, urls) {
   if (!el) return;
   const preCls = captureDetailPreClass(el);
   clearCaptureDetail(el);
@@ -249,8 +249,6 @@ function renderCaptureDetail(el, coreObj, urls, counts) {
   appendPre(coreObj);
   appendHeading("json网址");
   appendPre(urls ?? null);
-  appendHeading("数量预览");
-  appendPre(counts ?? null);
 }
 
 /** 刷新进度 UI */
@@ -343,7 +341,8 @@ async function refreshProgressInto(els, opts) {
       会话类型: isSuppl ? "补充小节" : modFromSession ? "正课" : "其他",
       会话中的模块编号: isSuppl ? null : modFromSession,
       capturedAt: c?.capturedAt ? new Date(c.capturedAt).toLocaleString() : null,
-    }, urlsForDetail, counts);
+      数量预览: counts,
+    }, urlsForDetail);
   } catch {
     els.lessonLine.textContent = MSG_NEED_REFRESH;
     els.syncLine.textContent = MSG_NEED_REFRESH;

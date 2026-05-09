@@ -147,9 +147,7 @@
     tip.className = "netacad-adl-tip";
     tip.innerHTML = `<ul class="netacad-adl-tip-list">
 <li>发送进度 <strong>每次只提交当前这一次会话</strong> 对应的课件</li>
-<li>多模块请逐个进入该模块页面再点发送</li>
-<li>补充小节可能没有模块编号</li>
-<li>发送前请在下方 <strong>展开查看监听参数</strong> 里核对 <strong>json网址</strong> 与 <strong>数量预览</strong> 是否与当前课程一致</li>
+<li>发送前请在下方 <strong>展开查看监听参数</strong> 里核对 <strong>json网址</strong> 是否与当前课程一致</li>
 <li>若仍没有所需数据或未对齐，请先点击下方的 <strong>刷新</strong> 按钮再试</li>
 <li>若仍然没有，请 <strong>刷新本页网页</strong> 后再试</li>
 </ul>`;
