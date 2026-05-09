@@ -1,6 +1,6 @@
 "use strict";
 
-/** 从各 frame 的 Resource Timing 补抓 ADL URL（不依赖 webRequest 是否进 SW）。 */
+/** Resource Timing 补 ADL URL */
 
 (function adlPerfBridge() {
   if (!chrome?.runtime?.id) return;

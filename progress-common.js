@@ -251,7 +251,7 @@ function renderCaptureDetail(el, coreObj, urls) {
   appendPre(urls ?? null);
 }
 
-/** 刷新进度 UI */
+/** 读状态写面板 */
 async function refreshProgressInto(els, opts) {
   const coursePageStrict = Boolean(opts?.coursePageStrict);
   const setEmpty = () => {

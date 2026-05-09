@@ -1,6 +1,6 @@
 "use strict";
 
-/** 与课件 / ADL 活动 ID 有关的解析 —— 请在 background（importScripts）、content、popup 中共用。 */
+/** activityId 解析 */
 
 function decodeNetacadMaybeRepeated(encoded, maxPasses) {
   let t = String(encoded || "").trim();
@@ -31,7 +31,6 @@ function extractCiscoCourseSlugLeading(sDecoded) {
   return h ? h[1] : "";
 }
 
-/** @returns {{ courseSlug: string, moduleId: string }} */
 function parseActivityIdHints(activityId) {
   const out = { courseSlug: "", moduleId: "" };
   if (!activityId || typeof activityId !== "string") return out;

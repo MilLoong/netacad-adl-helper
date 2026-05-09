@@ -1,6 +1,6 @@
 "use strict";
 
-/** 页面内 "发" */
+/** 页面浮层 */
 
 (function injectAdlProgressPanelHost() {
   if (!chrome?.runtime?.id) return;
@@ -9,7 +9,7 @@
 
   const PANEL_ID = "netacad-adl-helper-panel";
 
-  /** URL 是否显示浮标 */
+  /** FAB 路由匹配 */
   function netacadLessonFabUrlMatch(href) {
     try {
       const u = new URL(href);

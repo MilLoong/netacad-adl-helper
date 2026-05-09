@@ -220,7 +220,7 @@
   color: #e8eaed;
 }
 
-/* 监听参数展开区：分段 + 醒目标题（避免页面全局把 strong 变细） */
+/* JSON 监听区布局 */
 #netacad-adl-helper-panel .netacad-adl-json-stack {
   display: flex;
   flex-direction: column;

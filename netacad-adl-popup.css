@@ -157,7 +157,7 @@ select {
   font-size: 13px;
 }
 
-/* #lessonLine 为空不占位 */
+/* 空不占位 */
 
 #lessonLine:empty {
 
@@ -256,7 +256,7 @@ select {
   color: #444;
 }
 
-/* #toast 为空不占位 */
+/* 空不占位 */
 
 #toast:empty {
   display: none;
